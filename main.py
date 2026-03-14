@@ -7,7 +7,7 @@ from utils import load_policy, extract_json_from_text
 SECURITY_POLICY = load_policy("policies/security.md")
 COMPANY_POLICY = load_policy("policies/company_standards.md")
 
-def evaluate_pr(pr_url, user_text):
+def evaluate_pr(pr_url):
     print(f"[*] Parsing PR URL: {pr_url}...")
     owner, repo, pr_number = parse_pr_url(pr_url)
     
@@ -36,16 +36,22 @@ Check against company standards:
 
     results = {}
 
+    pr_diff = pr['diff'][:10000] # Truncate large diffs
+    if pr['body'] == None:
+        pr_body = ""
+    else:
+        pr_body = pr['body'][:2000]
+
     for check, instruction in checks.items():
         prompt = f"""
 PR TITLE:
 {pr['title']}
 
 PR DESCRIPTION:
-{pr['body']}
+{pr_body}
 
 DIFF:
-{pr['diff']}
+{pr_diff}
 
 REPO CONTEXT:
 {repo_context}
@@ -69,9 +75,8 @@ Respond ONLY in the following JSON format. NO MARKDOWN, NO EXPLANATIONS, NO CODE
 
 if __name__ == "__main__":
     pr_link = input("PR URL: ")
-    user_msg = input("User message: ")
 
-    output = evaluate_pr(pr_link, user_msg)
+    output = evaluate_pr(pr_link)
     print("\n=== FINAL REVIEW ===\n")
     for k, v in output.items():
         clean_v = extract_json_from_text(v)
