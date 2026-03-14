@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from github_client import parse_pr_url, fetch_pr
 from repo_reader import load_repo_context
 from llm import call_llm
@@ -6,7 +7,7 @@ from utils import load_policy, extract_json_from_text
 SECURITY_POLICY = load_policy("policies/security.md")
 COMPANY_POLICY = load_policy("policies/company_standards.md")
 
-def evaluate_pr(pr_url, user_text):
+def evaluate_pr(pr_url):
     print(f"[*] Parsing PR URL: {pr_url}...")
     owner, repo, pr_number = parse_pr_url(pr_url)
     
@@ -67,11 +68,13 @@ Respond ONLY in the following JSON format. NO MARKDOWN, NO EXPLANATIONS, NO CODE
 
 
 if __name__ == "__main__":
-    pr_link = input("PR URL: ")
-    user_msg = input("User message: ")
+    while True:
+        pr_link = input("PR URL (or type 'exit' to quit): ")
+        if pr_link.lower() == 'exit':
+            break
 
-    output = evaluate_pr(pr_link, user_msg)
-    print("\n=== FINAL REVIEW ===\n")
-    for k, v in output.items():
-        clean_v = extract_json_from_text(v)
-        print(f"\n--- {k.upper()} ---\n{clean_v}")
+        output = evaluate_pr(pr_link)
+        print("\n=== FINAL REVIEW ===\n")
+        for k, v in output.items():
+            clean_v = extract_json_from_text(v)
+            print(f"\n--- {k.upper()} ---\n{clean_v}")
