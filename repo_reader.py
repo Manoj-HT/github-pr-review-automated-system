@@ -1,8 +1,8 @@
 import os
 import git
 
-MAX_FILES = 40
-MAX_FILE_SIZE = 8000  # chars
+MAX_FILES = 20
+MAX_FILE_SIZE = 4000  # chars
 
 def load_repo_context(repo_url, branch, tmp_dir="repo_tmp"):
     if os.path.exists(tmp_dir):
@@ -24,8 +24,8 @@ def extract_context(repo_dir):
                     with open(path, "r", encoding="utf-8", errors="ignore") as file:
                         content = file.read(MAX_FILE_SIZE)
                         context.append(f"\n### {path}\n{content}")
-                except:
-                    pass
+                except (IOError, OSError) as e:
+                    print(f"    -> [!] Warning: Could not read file {path}: {e}")
         if len(context) >= MAX_FILES:
             break
     return "\n".join(context)
