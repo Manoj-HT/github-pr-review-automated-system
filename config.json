@@ -1,0 +1,12 @@
+{
+  "github": {
+    "username": "YOUR_GITHUB_USERNAME",
+    "pat": "YOUR_PERSONAL_ACCESS_TOKEN"
+  },
+  "features": {
+    "enable_create_pr": true,
+    "enable_comment_on_pr": true,
+    "enable_show_in_ui": true,
+    "auto_raise_pr": false
+  }
+}
